@@ -82,6 +82,8 @@ body {
   display: flex;
   justify-content: center;
   align-items: flex-start;
+  flex-direction: column;
+  gap: 40px;
   padding: 20px;
 }
 

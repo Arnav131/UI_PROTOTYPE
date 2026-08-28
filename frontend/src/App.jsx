@@ -3,34 +3,15 @@ import LiveClock from "./components/LiveClock.jsx";
 import PomodoroClock from "./components/PomodoroClock.jsx";
 import YearCountdown from "./components/YearCountdown.jsx";
 
-export default function App() {
-  const [mode, setMode] = useState("pomodoro"); // 'pomodoro' | 'year'
-
-  return (
-    <div className="app">
-      <header className="topbar">
-        <div className="brand">🍅 Pomodoro Sessions</div>
-        <LiveClock />
-      </header>
-
-      <nav className="modes">
-        <button
-          className={mode === "pomodoro" ? "active" : ""}
-          onClick={() => setMode("pomodoro")}
-        >
-          Pomodoro
-        </button>
-        <button
-          className={mode === "year" ? "active" : ""}
-          onClick={() => setMode("year")}
-        >
-          Year Countdown
-        </button>
-      </nav>
-
-      <main className="main">
-        {mode === "pomodoro" ? <PomodoroClock /> : <YearCountdown />}
-      </main>
-    </div>
-  );
+export default function App(){
+  return jsxs4("div",{className: "app",children: [
+    jsxs4("header",{className: "topbar",children: [
+      jsx4("div",{className: "brand",children: "🍅 Pomodoro Sessions"}),
+      jsx4(LiveClock,{})
+    ]}),
+    jsx4("main",{className: "main",children: [
+      jsx4(PomodoroClock,{}),
+      jsx4(YearCountdown,{})
+    ]})
+  ]});
 }

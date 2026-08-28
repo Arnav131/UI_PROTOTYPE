@@ -8,13 +8,14 @@ const CIRC = 2 * Math.PI * R;
 export default function PomodoroClock() {
   const [hours, setHours] = useState(0);
   const [minutes, setMinutes] = useState(25);
+  const [seconds , setSeconds] = useState(0); // this is for seconds
   const [running, setRunning] = useState(false);
   const [remaining, setRemaining] = useState(25 * 60); // seconds
   const [saved, setSaved] = useState(false);
   const endTimeRef = useRef(null);
   const totalRef = useRef(25 * 60);
 
-  const total = hours * 3600 + minutes * 60;
+  const total = hours * 3600 + minutes * 60 + seconds; // <- this is used for the total time calculations
 
   function applyDuration() {
     totalRef.current = total;
@@ -103,6 +104,18 @@ export default function PomodoroClock() {
             onChange={(e) => setMinutes(Number(e.target.value) || 0)}
           />
           <button onClick={() => setMinutes((m) => Math.min(59, m + 1))}>+</button>
+        </div>
+        <div className='stepper'>
+          <span>Seconds</span>
+          <button onClick={() => setSeconds((s) => Math.max(0,s-1))}>-</button>
+          <input
+            type="number"
+            min="0"
+            max="59"
+            value={seconds}
+            onChange={(e) => setSeconds(Number(e.target.value) || 0)}
+          />
+          <button onClick={() => setSeconds((s) => Math.min(59,s+1))}>-</button>
         </div>
       </div>
 
