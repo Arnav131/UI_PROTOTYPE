@@ -6,15 +6,22 @@
  *       ↓
  *   NotificationService.notify()
  *       ↓
- *   ┌──────────────┬──────────────┐
- *   │              │              │
- *   ▼              ▼              │
- *   In-App      Browser          │
- *   Toast       Notification     │
+ *   ┌──────────────┬──────────────┬──────────────┐
+ *   │              │              │              │
+ *   ▼              ▼              ▼              │
+ *   In-App      Browser         Voice            │
+ *   Toast       Notification    (spoken aloud)   │
+ *
+ * Voice delivery is implemented by a separate VoiceService
+ * (see ./voiceService.js) — this module only calls it, it does not
+ * implement speech itself.
  *
  * This module is ONLY responsible for delivery, not detection.
  * It must NOT know about ReminderEngine, TimeProvider, or backend logic.
  */
+
+import { speakOnce } from "./voiceService.js";
+import { buildSpeechText } from "./voiceMessageBuilder.js";
 
 /**
  * Map event_type to a human-readable message.
@@ -111,6 +118,17 @@ export function processReminder(reminder) {
 
   // Attempt browser notification (fails silently if not permitted)
   sendBrowserNotification(message);
+
+  // Voice is a separate, independently fault-tolerant delivery channel —
+  // a failure here must never affect the in-app or browser notification,
+  // which have already been handled above.
+  try {
+    const speechKey = `${reminder.task_id}:${reminder.event_type}`;
+    const speechText = buildSpeechText(reminder);
+    if (speechText) speakOnce(speechKey, speechText);
+  } catch (err) {
+    console.warn("[NotificationService] Voice delivery failed:", err);
+  }
 
   // Return for in-app display
   return {
