@@ -33,9 +33,10 @@ class TaskSerializer(serializers.ModelSerializer):
             'is_locked', 'is_flexible',
             'goal',
             'created_at', 'updated_at', 'completed_at',
+            'last_reminded_at',
             'is_overdue',
         )
-        read_only_fields = ('id', 'created_at', 'updated_at', 'completed_at', 'is_overdue')
+        read_only_fields = ('id', 'created_at', 'updated_at', 'completed_at', 'last_reminded_at', 'is_overdue')
         extra_kwargs = {
             'estimated_duration': {'read_only': True},
         }

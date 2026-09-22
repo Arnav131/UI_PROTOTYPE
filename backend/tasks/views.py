@@ -12,6 +12,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from .models import Task
 from .serializers import TaskSerializer
+from .reminder_engine import ReminderEngine
 
 
 class TaskViewSet(viewsets.ModelViewSet):
@@ -26,6 +27,7 @@ class TaskViewSet(viewsets.ModelViewSet):
     DELETE /api/tasks/{id}/         — delete task
     POST   /api/tasks/{id}/complete/ — mark completed
     POST   /api/tasks/{id}/reopen/   — reopen task
+    GET    /api/tasks/reminders/due/ — check for due reminders
     """
 
     serializer_class = TaskSerializer
@@ -79,3 +81,22 @@ class TaskViewSet(viewsets.ModelViewSet):
         task.completed_at = None
         task.save(update_fields=['status', 'completed_at', 'updated_at'])
         return Response(TaskSerializer(task).data)
+
+    @action(detail=False, methods=['get'], url_path='reminders/due')
+    def reminders_due(self, request):
+        """
+        Check for tasks that are due for a reminder right now.
+
+        The backend is authoritative — this endpoint determines
+        reminder eligibility using the ReminderEngine. The frontend
+        should NOT decide "19:30 has arrived, therefore reminder is due."
+
+        Idempotent: repeated calls will not produce duplicate reminders
+        for the same task occurrence.
+
+        Returns:
+            {"reminders": [ReminderEvent, ...]}
+        """
+        engine = ReminderEngine()
+        reminders = engine.check_due_reminders(request.user)
+        return Response({'reminders': reminders})

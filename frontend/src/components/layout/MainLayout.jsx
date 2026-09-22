@@ -1,11 +1,16 @@
 /**
  * MainLayout — sidebar navigation + main content area.
  * Uses the existing glassmorphism design system.
+ *
+ * Phase 2B: Includes ReminderProvider (single global polling loop)
+ * and NotificationToast for in-app reminder delivery.
  */
 
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext.jsx";
+import { ReminderProvider } from "../../context/ReminderContext.jsx";
 import LiveClock from "../tools/LiveClock.jsx";
+import NotificationToast from "../NotificationToast.jsx";
 
 const NAV_ITEMS = [
   { to: "/", icon: "fire", label: "Dashboard" },
@@ -26,59 +31,65 @@ export default function MainLayout() {
   };
 
   return (
-    <div className="app-layout">
-      {/* Sidebar */}
-      <aside className="sidebar glass">
-        <div className="sidebar-brand">
-          <img src="/assets/icons/tomato.png" className="px px-lg" alt="" />
-          <span className="sidebar-title">Productivy</span>
-        </div>
-
-        <nav className="sidebar-nav">
-          {NAV_ITEMS.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              end={item.to === "/"}
-              className={({ isActive }) =>
-                `sidebar-link${isActive ? " active" : ""}`
-              }
-            >
-              <img
-                src={`/assets/icons/${item.icon}.png`}
-                className="px"
-                alt=""
-              />
-              <span>{item.label}</span>
-            </NavLink>
-          ))}
-        </nav>
-
-        <div className="sidebar-footer">
-          <div className="sidebar-user">
-            <div className="sidebar-avatar">
-              {user?.first_name?.[0] || user?.username?.[0] || "U"}
-            </div>
-            <span className="sidebar-username">
-              {user?.first_name || user?.username}
-            </span>
+    <ReminderProvider>
+      <div className="app-layout">
+        {/* Sidebar */}
+        <aside className="sidebar glass">
+          <div className="sidebar-brand">
+            <img src="/assets/icons/tomato.png" className="px px-lg" alt="" />
+            <span className="sidebar-title">Productivy</span>
           </div>
-          <button className="sidebar-logout" onClick={handleLogout} title="Logout">
-            <img src="/assets/icons/close.png" className="px" alt="" />
-          </button>
-        </div>
-      </aside>
 
-      {/* Main content */}
-      <div className="main-content">
-        <header className="main-topbar">
-          <div />
-          <LiveClock />
-        </header>
-        <main className="main-body">
-          <Outlet />
-        </main>
+          <nav className="sidebar-nav">
+            {NAV_ITEMS.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={item.to === "/"}
+                className={({ isActive }) =>
+                  `sidebar-link${isActive ? " active" : ""}`
+                }
+              >
+                <img
+                  src={`/assets/icons/${item.icon}.png`}
+                  className="px"
+                  alt=""
+                />
+                <span>{item.label}</span>
+              </NavLink>
+            ))}
+          </nav>
+
+          <div className="sidebar-footer">
+            <div className="sidebar-user">
+              <div className="sidebar-avatar">
+                {user?.first_name?.[0] || user?.username?.[0] || "U"}
+              </div>
+              <span className="sidebar-username">
+                {user?.first_name || user?.username}
+              </span>
+            </div>
+            <button className="sidebar-logout" onClick={handleLogout} title="Logout">
+              <img src="/assets/icons/close.png" className="px" alt="" />
+            </button>
+          </div>
+        </aside>
+
+        {/* Main content */}
+        <div className="main-content">
+          <header className="main-topbar">
+            <div />
+            <LiveClock />
+          </header>
+          <main className="main-body">
+            <Outlet />
+          </main>
+        </div>
+
+        {/* Global notification toasts — positioned fixed */}
+        <NotificationToast />
       </div>
-    </div>
+    </ReminderProvider>
   );
 }
+

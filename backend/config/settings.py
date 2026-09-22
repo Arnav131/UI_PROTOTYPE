@@ -203,5 +203,9 @@ LOGGING = {
             'handlers': ['console'],
             'level': 'INFO',
         },
+        'reminders': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
     },
 }

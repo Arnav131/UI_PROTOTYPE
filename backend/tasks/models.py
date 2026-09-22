@@ -87,6 +87,12 @@ class Task(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     completed_at = models.DateTimeField(null=True, blank=True)
 
+    # Reminder tracking — used by ReminderEngine for idempotency
+    last_reminded_at = models.DateTimeField(
+        null=True, blank=True,
+        help_text='When a reminder was last emitted for this task'
+    )
+
     class Meta:
         ordering = ['-priority', 'scheduled_start', '-created_at']
         indexes = [
