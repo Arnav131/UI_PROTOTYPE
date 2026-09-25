@@ -1,7 +1,10 @@
-"""Scheduler URLs — minimal for Phase 1, expanded in Phase 2-3."""
+"""Scheduler URLs."""
 
 from django.urls import path
+from .views import FreeSlotsView, ConflictsView, ProposeScheduleView
 
 urlpatterns = [
-    # Schedule endpoints will be added in Phase 2
+    path('free-slots/', FreeSlotsView.as_view(), name='schedule-free-slots'),
+    path('conflicts/', ConflictsView.as_view(), name='schedule-conflicts'),
+    path('propose/', ProposeScheduleView.as_view(), name='schedule-propose'),
 ]
